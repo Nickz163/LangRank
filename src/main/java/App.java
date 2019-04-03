@@ -22,9 +22,11 @@ public class App {
 //                .forEach(element -> System.out.println(element.text()));
 
         TiobeRatingParser parser = TiobeRatingParser.getInstance();
-        parser.parseLanguage("java");
-        parser.parseLanguage("python");
+      //  parser.parseLanguage("java");
+//        parser.parseLanguage("python");
         PYPLRatingParser pyplRatingParser = PYPLRatingParser.getInstance();
-        pyplRatingParser.parseData();
+//        pyplRatingParser.parseData();
+        SOvFParser sOvFParser = SOvFParser.getInstance();
+        sOvFParser.parseData("java");
     }
 }

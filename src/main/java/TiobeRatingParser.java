@@ -46,7 +46,7 @@ public class TiobeRatingParser {
         return TIOBE_URL + name + "/"; // TODO: Refactor this
     }
 
-    private Function<String, String> parseData = str -> {
+    private Function<String, String> parseData = str -> { //TODO rename
         //Pattern pattern = Pattern.compile("name : .*,data : .*(?=}\n)");
         Pattern pattern = Pattern.compile("\\{name : .*,data : .*}(?=\n)");
         Matcher matcher = pattern.matcher(str);
