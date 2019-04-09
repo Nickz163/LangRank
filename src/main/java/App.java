@@ -23,11 +23,12 @@ public class App {
 //                .forEach(element -> System.out.println(element.text()));
 
         TiobeRatingParser parser = TiobeRatingParser.getInstance();
+        parser.parseWholeData();
       //  parser.parseLanguage("java");
 //        parser.parseLanguage("python");
-        PYPLRatingParser pyplRatingParser = PYPLRatingParser.getInstance();
+//        PYPLRatingParser pyplRatingParser = PYPLRatingParser.getInstance();
 //        pyplRatingParser.parseData();
-        SOvFParser sOvFParser = SOvFParser.getInstance();
-        sOvFParser.parseData("java");
+//        SOvFParser sOvFParser = SOvFParser.getInstance();
+//        sOvFParser.parseData("java");
     }
 }

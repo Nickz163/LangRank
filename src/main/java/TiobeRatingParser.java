@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TiobeRatingParser implements LanguageRatingParser {
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/"; // warning!
@@ -26,6 +27,14 @@ public class TiobeRatingParser implements LanguageRatingParser {
                     .referrer("http://www.google.com")
                     .get();
 
+
+            String data = document.select("script").stream()
+                    .flatMap(element -> element.dataNodes().stream())
+                    .filter(dataNode -> dataNode.getWholeData().contains("$(function () {"))
+                    .map(DataNode::getWholeData)
+                    .collect(Collectors.joining());
+           // System.out.println(wholeDataParser.apply(data));
+            FileDataWriter.getInstance().writeData("TiobeWholeData.txt",wholeDataParser.apply(data));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,6 +61,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
 
             System.out.println(parseData.apply(data));
 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,6 +83,18 @@ public class TiobeRatingParser implements LanguageRatingParser {
         return newStr;
     };
 
-//    Function <String,Json>
+
+    private Function<String,String> wholeDataParser = str -> {
+        Pattern pattern = Pattern.compile("\\{name :.*}"); // problems with khanda
+        Matcher matcher = pattern.matcher(str);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        while (matcher.find()) {
+            stringBuilder.append(matcher.group());
+        }
+        return stringBuilder.toString();
+    };
+
+
 
 }
