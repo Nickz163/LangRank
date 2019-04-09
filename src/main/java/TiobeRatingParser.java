@@ -10,11 +10,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class TiobeRatingParser {
+public class TiobeRatingParser implements LanguageRatingParser {
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/"; // warning!
+    private Document document;
 
     public static TiobeRatingParser getInstance() {
         return new TiobeRatingParser();
+    }
+
+    @Override
+    public void parseWholeData() {
+        try {
+            document = Jsoup.connect(TIOBE_URL)
+                    .userAgent("Chrome/4.0.249.0 Safari/532.5")
+                    .referrer("http://www.google.com")
+                    .get();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void parseLanguage(String name) { // TODO: need to complete this method (its can wait)
