@@ -34,7 +34,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
                     .map(DataNode::getWholeData)
                     .collect(Collectors.joining());
            // System.out.println(wholeDataParser.apply(data));
-            FileDataWriter.getInstance().writeData("TiobeWholeData.txt",wholeDataParser.apply(data));
+            FileDataWriter.getInstance().writeData("TiobeWholeData.json",wholeDataParser.apply(data));
 
         } catch (IOException e) {
             e.printStackTrace();
