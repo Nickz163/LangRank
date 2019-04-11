@@ -103,7 +103,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
         for (int i = 0; i < languages.size(); i++)
             for (int k = i; k < values.size(); k += languages.size())
                 languages.get(i).appendData(dates.get(k / languages.size()), values.get(k));//// check
-            
+
 
 
         languages.forEach(a -> a.printLang());
