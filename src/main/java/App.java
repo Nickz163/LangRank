@@ -9,19 +9,28 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class App {
 
     public static void main(String[] args) throws IOException {
 
-        TiobeRatingParser parser = TiobeRatingParser.getInstance();
-//        parser.parseWholeData();
-      //  parser.parseLanguage("java");
-//        parser.parseLanguage("python");
+     TiobeRatingParser tiobeParser = TiobeRatingParser.getInstance();
+     //tiobeParser.parseWholeData();
+        List<String> languagesNames = tiobeParser.parseWholeData().stream()
+                .map(lang->lang.getName())
+                .collect(Collectors.toList());
 
-        PYPLRatingParser pyplRatingParser = PYPLRatingParser.getInstance();
-        pyplRatingParser.parseData();
-//        SOvFParser sOvFParser = SOvFParser.getInstance();
-//        sOvFParser.parseData("java");
+//        languagesNames.forEach(a->System.out.println(a));
+
+
+//        PYPLRatingParser pyplRatingParser = PYPLRatingParser.getInstance();
+//        pyplRatingParser.parseWholeData();
+//        pyplRatingParser.saveDataInPlainFormat();
+//
+        SOvFParser sOvFParser = SOvFParser.getInstance(languagesNames);
+       // sOvFParser.parseData("java");
+        sOvFParser.parseWholeData();
+        //sOvFParser.saveDataInPlainFormat();
     }
 }

@@ -5,6 +5,9 @@ public class LanguageDataPrototype {
 
     private Map<String,Double> data = new LinkedHashMap<>();// temporary
 
+    public LanguageDataPrototype() {
+    }
+
     public  LanguageDataPrototype(String name) {
         this.name = name;
     }

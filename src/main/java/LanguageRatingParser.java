@@ -1,10 +1,12 @@
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 public interface LanguageRatingParser {
-    void parseWholeData();
-    void parseLanguage(String language);
+    List<LanguageDataPrototype> parseWholeData();
+    void saveDataInPlainFormat();
+    //void parseLanguage(String language);
 //    void parseDefaultLanguageSet();
 
 }

@@ -9,40 +9,36 @@ import java.util.regex.Pattern;
 
 public class PYPLRatingParser implements LanguageRatingParser {
     final private static String PYPL_ALL_URL = "https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js";
-    private Document document;
+    private static Document document;
 
     public static PYPLRatingParser getInstance() {
-        return new PYPLRatingParser();
-    }
-
-    public void parseData() {
         try {
-
             document = Jsoup.connect(PYPL_ALL_URL)
                     .userAgent("Chrome/4.0.249.0 Safari/532.5")
                     .referrer("http://www.google.com")
                     .get();
-
-            String data = directFormatParser.andThen(wholeDataParser).apply(document.text());
-            System.out.println(data);
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-    }
-
-
-    @Override
-    public void parseWholeData() {
-
+        return new PYPLRatingParser();
     }
 
     @Override
-    public void parseLanguage(String language) {
+    public List<LanguageDataPrototype> parseWholeData() {
+        List<LanguageDataPrototype> languages = new ArrayList<>();
+           // String data = directFormatParser.andThen(wholeDataParser).apply(document.text());
+            //System.out.println(data);
+            languages = directFormatParser.andThen(wholeDataParser).apply(document.text());
 
+        return languages;
     }
+
+    @Override
+    public void saveDataInPlainFormat() {
+        FileDataWriter.getInstance().writeData("PYPLWholeData.txt", document.text()); //plain data
+    }
+
+
 
 
     /**
@@ -55,8 +51,9 @@ public class PYPLRatingParser implements LanguageRatingParser {
         Matcher matcher = pattern.matcher(str);
 
         String newStr = "";
-        while (matcher.find()) {
-            newStr = str.substring(matcher.start(), matcher.end());
+        while (matcher.find()) { // TODO: проверить этот момент
+           // newStr = str.substring(matcher.start(), matcher.end());
+            newStr = matcher.group();
         }
         Matcher deleterMatcher = deleteCommentsPattern.matcher(newStr);
 //       return deleterMatcher.replaceAll("").replaceAll("'", "");
@@ -65,7 +62,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
     };
 
 
-    private Function<String, String> wholeDataParser = str -> {
+    private Function<String, List<LanguageDataPrototype>> wholeDataParser = str -> {
 
         Pattern namePattern = Pattern.compile("(?<=(\\[|\\s)').*?(?=')"); // lazy quantification
         //Pattern datePattern = Pattern.compile("(?<=Date\\().*\\)");
@@ -94,21 +91,16 @@ public class PYPLRatingParser implements LanguageRatingParser {
             values.add(Double.parseDouble(valueMatcher.group()));
 
 
-//        for (int i = 0; i < languages.size(); i++) { // неправильно
-//            for (int j = 0; j < dates.size(); j++)
-//                for (int k = i; k < values.size(); k += languages.size())
-//                    languages.get(i).appendData(dates.get(j), values.get(k));
-//        }
-
         for (int i = 0; i < languages.size(); i++)
             for (int k = i; k < values.size(); k += languages.size())
                 languages.get(i).appendData(dates.get(k / languages.size()), values.get(k));//// check
 
 
-
-        languages.forEach(a -> a.printLang());
+       // languages.forEach(a -> a.printLang());
         //languages.forEach(a -> a.printDataInfo());
-        return str; // old string
+
+
+        return languages; // old string
     };
 
 }

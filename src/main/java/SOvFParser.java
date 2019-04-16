@@ -3,80 +3,191 @@ import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SOvFParser {
+public class SOvFParser implements LanguageRatingParser {
     final private static String SOvF_ALL_URL = "https://cdn.sstatic.net/insights/data/month_tag_percents.json";
+    List<String> languagesNames;
 
-    public static SOvFParser getInstance() {
-        return new SOvFParser();
+    public static SOvFParser getInstance(List<String> names) {
+        return new SOvFParser(names);
     }
 
-    public void parseData(String language) {
+    /**
+     * private constructor for getInstance
+     *
+     * @param languagesNames
+     */
+    private SOvFParser(List<String> languagesNames) { // todo: использовать данный список имен для парсинга
+        this.languagesNames = languagesNames;
+    }
 
-        try {
-//            Document document = Jsoup.connect(SOvF_ALL_URL) //TODO: сделать общий интерфейс и убрать это в default метод
-//                    .userAgent("Chrome/4.0.249.0 Safari/532.5")
-//                    .referrer("http://www.google.com")
-//                    .get();
+    @Override
+    public List<LanguageDataPrototype> parseWholeData() {
+        String data = dataSupplier.get();
+        //dateParser.apply(data).forEach((a) -> System.out.println(a));
+        wholeDataParser.apply(data, languagesNames);
 
-            URL url = new URL(SOvF_ALL_URL);
+        return null;
+    }
 
-            InputStream inputStream = url.openStream();
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("SOvF_all.txt")))) {
-
-                // String source = new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.joining());
-                new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(line -> {
-                    try {
-                        writer.write(line);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-            }
+    @Override
+    public void saveDataInPlainFormat() {
+        FileDataWriter.getInstance().writeData("SOvFWholeData.txt", dataSupplier.get());
+    }
 
 
-//            String data = Stream.of(dateParser.apply(source), langDataParser.apply(source, language))
-//                    .collect(Collectors.joining(",\n"));
+    private Supplier<String> dataSupplier = () -> {
+        String data = "";
+        try (BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new URL(SOvF_ALL_URL).openStream()))) {
+            //  System.out.println(bufferedReader.readLine());
+            data = bufferedReader.lines().collect(Collectors.joining());
             // System.out.println(data);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+        return data;
 
-    private String langNameAdapter() {
-        return "";// TODO complete this method
-    }
+    };
 
-    private BiFunction<String, String, String> langDataParser = (source, language) -> {
-        //Pattern pattern = Pattern.compile("name : .*,data : .*(?=}\n)");
-//        Pattern datePattern = Pattern.compile("\\{.*\"Year\":.*\"Month\":.*],");
+
+    private Function<String, List<String>> dateParser = str -> {
+
+        List<String> dates = new ArrayList<>();
+
+        Pattern datePattern = Pattern.compile("(?<=(\"Year\"|\"Month\"): \\[).*?(?=])");
+
+        // not effective
+        Pattern yearPattern = Pattern.compile("\\d\\d\\d\\d");
+        Pattern monthPattern = Pattern.compile("(?<=\")\\d{1,2}(?=\")");
+
+
+        Matcher dateMatcher = datePattern.matcher(str);
+
+        StringBuilder builder = new StringBuilder();
+        while (dateMatcher.find())
+            builder.append(dateMatcher.group());
+
+        Matcher yearMatcher = yearPattern.matcher(builder.toString());
+        Matcher monthMatcher = monthPattern.matcher(builder.toString());
+
+//        builder = new StringBuilder();
+
+        while (yearMatcher.find() && monthMatcher.find())
+            dates.add(yearMatcher.group() + "," + monthMatcher.group() + "," + "1");
+
+        return dates;
+    };
+
+
+    private Function<String, Map<String, List<String>>> valuesParser = str -> {
+
+
+        Map<String, List<String>> data = new HashMap<>();
+
+        List<String> values = new ArrayList<>();
+        Pattern namePattern = Pattern.compile("(?<=\").*(?=\")");
+        Pattern valuePattern = Pattern.compile("\\d{1,}\\.?\\d*");
+
+        Matcher valueMatcher = valuePattern.matcher(str);
+        Matcher nameMatcher = namePattern.matcher(str);
+
+        String name = "";
+        while (nameMatcher.find())
+            name = nameMatcher.group();
+
+
+        while (valueMatcher.find())
+            values.add(valueMatcher.group());
+
+
+        data.put(name, values);
+        return data;
+
+    };
+
+    private Function<List<String>, String> namesRegexAdapter = list -> list.stream()
+            .map(str -> str.toLowerCase())
+            .collect(Collectors.joining("|", "(", ")"));
+
+
+    private BiFunction<String, List<String>, List<LanguageDataPrototype>> wholeDataParser = (source, languagesNames) -> {
+
+
+        List<LanguageDataPrototype> languages = new ArrayList<>();
+
+        String nameRegex = namesRegexAdapter.apply(languagesNames);
+
+        Pattern dataPattern = Pattern.compile("\"" + nameRegex + "\": \\[.*?]");
+        Matcher dataMatcher = dataPattern.matcher(source);
+
+
+        List<String> dates = dateParser.apply(source);
+        LinkedHashMap<String, List<String>> nameAndValues = new LinkedHashMap<>();
+        while (dataMatcher.find()) {
+//            String str = dataMatcher.group();
+//            System.out.println(dataMatcher.group());
+            nameAndValues.putAll(valuesParser.apply(dataMatcher.group()));
+        }
+
+
+        // TODO заменить на zip
+        Set<String> langNames = nameAndValues.keySet();
+
+        langNames.stream().forEach(lang -> {
+
+            LanguageDataPrototype language = new LanguageDataPrototype(lang);
+
+            List<String> values = nameAndValues.get(lang);
+            for (int i = 0; i < values.size(); i++) {
+                language.appendData(dates.get(i), values.get(i));
+            }
+            languages.add(language);
+
+        });
+
+        languages.forEach(a->a.printLang());
+
+        return languages;
+    };
+
+
+//    private BiFunction<String, String, String> langDataParser = (source, language) -> {
+//        //Pattern pattern = Pattern.compile("name : .*,data : .*(?=}\n)");
+////        Pattern datePattern = Pattern.compile("\\{.*\"Year\":.*\"Month\":.*],");
+////        Matcher matcher = datePattern.matcher(source);
+//        Pattern langDataPattern = Pattern.compile("\"" + language + "\": \\[.*]");
+//        Matcher matcher = langDataPattern.matcher(source);
+//        String newStr = "";
+//        while (matcher.find()) {
+//            newStr = source.substring(matcher.start(), matcher.end());
+//        }
+//        return newStr;
+//    };
+
+//    private Function<String, String> dateParser = (source) -> {
+//        Pattern datePattern = Pattern.compile("\\{.*\"Year\":.*\"Month\":.*]");
 //        Matcher matcher = datePattern.matcher(source);
-        Pattern langDataPattern = Pattern.compile("\"" + language + "\": \\[.*]");
-        Matcher matcher = langDataPattern.matcher(source);
-        String newStr = "";
-        while (matcher.find()) {
-            newStr = source.substring(matcher.start(), matcher.end());
-        }
-        return newStr;
-    };
+//        String newStr = "";
+//        while (matcher.find()) {
+//            newStr = source.substring(matcher.start(), matcher.end());
+//        }
+//        return newStr;
+//    };
 
-    private Function<String, String> dateParser = (source) -> {
-        Pattern datePattern = Pattern.compile("\\{.*\"Year\":.*\"Month\":.*]");
-        Matcher matcher = datePattern.matcher(source);
-        String newStr = "";
-        while (matcher.find()) {
-            newStr = source.substring(matcher.start(), matcher.end());
-        }
-        return newStr;
-    };
 
 }
