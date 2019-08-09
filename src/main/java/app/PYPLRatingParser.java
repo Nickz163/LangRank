@@ -1,3 +1,5 @@
+package app;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -8,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PYPLRatingParser implements LanguageRatingParser {
+    final private String SOURCE_NAME = "PYPL";
     final private static String PYPL_ALL_URL = "https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js";
     private static Document document;
 
@@ -26,9 +29,9 @@ public class PYPLRatingParser implements LanguageRatingParser {
     @Override
     public List<LanguageDataPrototype> parseWholeData() {
         List<LanguageDataPrototype> languages = new ArrayList<>();
-           // String data = directFormatParser.andThen(wholeDataParser).apply(document.text());
-            //System.out.println(data);
-            languages = directFormatParser.andThen(wholeDataParser).apply(document.text());
+        // String data = directFormatParser.andThen(wholeDataParser).apply(document.text());
+
+        languages = directFormatParser.andThen(wholeDataParser).apply(document.text());
 
         return languages;
     }
@@ -37,8 +40,6 @@ public class PYPLRatingParser implements LanguageRatingParser {
     public void saveDataInPlainFormat() {
         FileDataWriter.getInstance().writeData("PYPLWholeData.txt", document.text()); //plain data
     }
-
-
 
 
     /**
@@ -52,7 +53,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
 
         String newStr = "";
         while (matcher.find()) { // TODO: проверить этот момент
-           // newStr = str.substring(matcher.start(), matcher.end());
+            // newStr = str.substring(matcher.start(), matcher.end());
             newStr = matcher.group();
         }
         Matcher deleterMatcher = deleteCommentsPattern.matcher(newStr);
@@ -82,7 +83,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
 
 
         while (nameMatcher.find()) {
-            languages.add(new LanguageDataPrototype(nameMatcher.group()));
+            languages.add(new LanguageDataPrototype(nameMatcher.group(), SOURCE_NAME));
         }
         while (dateMatcher.find())
             dates.add(dateMatcher.group());
@@ -96,7 +97,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
                 languages.get(i).appendData(dates.get(k / languages.size()), values.get(k));//// check
 
 
-       // languages.forEach(a -> a.printLang());
+        // languages.forEach(a -> a.printLang());
         //languages.forEach(a -> a.printDataInfo());
 
 

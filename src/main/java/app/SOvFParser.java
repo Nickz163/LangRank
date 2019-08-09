@@ -1,11 +1,8 @@
-import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
-import org.jsoup.nodes.Document;
+package app;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -13,9 +10,10 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SOvFParser implements LanguageRatingParser {
+
+    final private String SOURCE_NAME = "Stack Overflow";
     final private static String SOvF_ALL_URL = "https://cdn.sstatic.net/insights/data/month_tag_percents.json";
     List<String> languagesNames;
 
@@ -36,9 +34,9 @@ public class SOvFParser implements LanguageRatingParser {
     public List<LanguageDataPrototype> parseWholeData() {
         String data = dataSupplier.get();
         //dateParser.apply(data).forEach((a) -> System.out.println(a));
-        wholeDataParser.apply(data, languagesNames);
+        //wholeDataParser.apply(data, languagesNames); // was
 
-        return null;
+        return wholeDataParser.apply(data, languagesNames); // changed!!!!
     }
 
     @Override
@@ -150,7 +148,7 @@ public class SOvFParser implements LanguageRatingParser {
 
         langNames.stream().forEach(lang -> {
 
-            LanguageDataPrototype language = new LanguageDataPrototype(lang);
+            LanguageDataPrototype language = new LanguageDataPrototype(lang, SOURCE_NAME);
 
             List<String> values = nameAndValues.get(lang);
             for (int i = 0; i < values.size(); i++) {
@@ -160,7 +158,7 @@ public class SOvFParser implements LanguageRatingParser {
 
         });
 
-        languages.forEach(a->a.printLang());
+        //languages.forEach(a->a.printLang());
 
         return languages;
     };

@@ -1,14 +1,11 @@
+package app;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.tools.internal.xjc.Language;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
-import sun.jvm.hotspot.debugger.MachineDescriptionPPC;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -18,6 +15,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TiobeRatingParser implements LanguageRatingParser {
+
+    final private String SOURCE_NAME = "TIOBE";
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/"; // warning!
     private static Document document;
 
@@ -37,7 +36,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
     public List<LanguageDataPrototype> parseWholeData() {
         String data = dataSupplier.get();
         // System.out.println(plainDataParser.apply(data));
-        // FileDataWriter.getInstance().writeData("TiobeWholeData.json", plainDataParser.apply(data));
+        // app.FileDataWriter.getInstance().writeData("TiobeWholeData.json", plainDataParser.apply(data));
         List<LanguageDataPrototype>  languages = plainDataParser.andThen(wholeDataParser).apply(data);
 
         return languages;
@@ -89,7 +88,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
         Matcher dateMatcher = datePattern.matcher(str);
         Matcher valueMatcher = valuePattern.matcher(str);
 
-        LanguageDataPrototype language = new LanguageDataPrototype(nameMatcher.find() ? nameMatcher.group() : "NULL");
+        LanguageDataPrototype language = new LanguageDataPrototype(nameMatcher.find() ? nameMatcher.group() : "NULL", SOURCE_NAME);
 
         while (dateMatcher.find() && valueMatcher.find())
             language.appendData(dateMatcher.group().replaceAll("\\s", ""), valueMatcher.group());
