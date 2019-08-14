@@ -10,7 +10,11 @@ import java.util.stream.Collectors;
 
 public class SOvFDataDownloader implements LanguageDataDownloader {
 
-    final private static String SOvF_ALL_URL = "https://cdn.sstatic.net/insights/data/month_tag_percents.json";
+     private static final String SOvF_ALL_URL = "https://cdn.sstatic.net/insights/data/month_tag_percents.json";
+
+    public static SOvFDataDownloader getInstance() {
+        return new SOvFDataDownloader();
+    }
 
     private Supplier<String> dataSupplier = () -> {
         String data = "";

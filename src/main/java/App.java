@@ -24,7 +24,7 @@
 ////       languagesNames.forEach(a->System.out.println(a));
 //
 //
-//        app.SOvFParser sOvFParser = app.SOvFParser.getInstance(languagesNames);
+//        app.SOvFRatingParser sOvFParser = app.SOvFRatingParser.getInstance(languagesNames);
 //        // sOvFParser.parseData("java");
 //        List<app.LanguageDataPrototype> langSOvF = sOvFParser.parseWholeData();
 ////        langSOvF.forEach(a -> a.printLang());
