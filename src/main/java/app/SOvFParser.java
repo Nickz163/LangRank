@@ -99,7 +99,7 @@ public class SOvFParser implements LanguageRatingParser {
 
         List<String> values = new ArrayList<>();
         Pattern namePattern = Pattern.compile("(?<=\").*(?=\")");
-        Pattern valuePattern = Pattern.compile("\\d{1,}\\.?\\d*");
+        Pattern valuePattern = Pattern.compile("\\d{1,}\\.?\\d*"); // d+
 
         Matcher valueMatcher = valuePattern.matcher(str);
         Matcher nameMatcher = namePattern.matcher(str);

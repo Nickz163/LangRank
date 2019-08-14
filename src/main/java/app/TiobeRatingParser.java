@@ -3,6 +3,9 @@ package app;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
@@ -14,9 +17,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Service
 public class TiobeRatingParser implements LanguageRatingParser {
 
     final private String SOURCE_NAME = "TIOBE";
+
+    //TODO = examle
+//    @Value("$[parser.tiobe.name]")
+//    String SourceName;
+
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/"; // warning!
     private static Document document;
 
@@ -37,8 +46,8 @@ public class TiobeRatingParser implements LanguageRatingParser {
         String data = dataSupplier.get();
         // System.out.println(plainDataParser.apply(data));
         // app.FileDataWriter.getInstance().writeData("TiobeWholeData.json", plainDataParser.apply(data));
-        List<LanguageDataPrototype>  languages = plainDataParser.andThen(wholeDataParser).apply(data);
 
+        List<LanguageDataPrototype> languages = plainDataParser.andThen(wholeDataParser).apply(data);
         return languages;
 
     }
@@ -55,6 +64,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
             .filter(dataNode -> dataNode.getWholeData().contains("$(function () {"))
             .map(DataNode::getWholeData)
             .collect(Collectors.joining());
+
 
     private Function<String, String> parseData = str -> { //TODO rename
         //Pattern pattern = Pattern.compile("name : .*,data : .*(?=}\n)");
@@ -78,6 +88,19 @@ public class TiobeRatingParser implements LanguageRatingParser {
         }
         return stringBuilder.toString();
     };
+
+
+    private String parsePlainData(String str) {
+        Pattern pattern = Pattern.compile("\\{name :.*}"); // problems with khanda
+        Matcher matcher = pattern.matcher(str);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        while (matcher.find()) {
+            stringBuilder.append(matcher.group());
+        }
+        return stringBuilder.toString();
+    }
+
 
     private Function<String, LanguageDataPrototype> lineParser = str -> {
         Pattern namePattern = Pattern.compile("(?<=name : ').+(?=')");
