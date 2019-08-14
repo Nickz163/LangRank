@@ -3,8 +3,10 @@ package app;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 
@@ -20,7 +22,15 @@ import java.util.stream.Collectors;
 @Service
 public class TiobeRatingParser implements LanguageRatingParser {
 
+
+
     final private String SOURCE_NAME = "TIOBE";
+
+//    public TiobeRatingParser(@Value("$[parser.tiobe.name]")String sourceName) {
+//        this.SOURCE_NAME = sourceName;
+//    }
+
+//    final private String SOURCE_NAME = "TIOBE";
 
     //TODO = examle
 //    @Value("$[parser.tiobe.name]")
@@ -29,7 +39,8 @@ public class TiobeRatingParser implements LanguageRatingParser {
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/"; // warning!
     private static Document document;
 
-    public static TiobeRatingParser getInstance() { //Todo: возможно вынести в метод connect
+
+    public static TiobeRatingParser getInstance() {
         try {
             document = Jsoup.connect(TIOBE_URL)
                     .userAgent("Chrome/4.0.249.0 Safari/532.5")
@@ -51,12 +62,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
         return languages;
 
     }
-
-    @Override
-    public void saveDataInPlainFormat() {
-        // default JSON from TIOBE (temporaty txt)
-        FileDataWriter.getInstance().writeData("TiobeWholeData.txt", plainDataParser.apply(dataSupplier.get()));
-    }
+    
 
 
     private Supplier<String> dataSupplier = () -> document.select("script").stream()
