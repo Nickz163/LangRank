@@ -12,7 +12,7 @@ public class SOvFRatingParser implements LanguageRatingParser {
     private final String SOURCE_NAME = "Stack_Overflow";
     private LanguageDataDownloader dataDownloader;
 
-   private List<String> languagesNames;
+    private List<String> languagesNames;
 
 
     // Todo: use separate file for languages names
@@ -24,12 +24,13 @@ public class SOvFRatingParser implements LanguageRatingParser {
     /**
      * private constructor for getInstance
      *
-     * @param languagesNames  names for parsing
+     * @param languagesNames names for parsing
      */
     private SOvFRatingParser(List<String> languagesNames) { // todo: использовать данный список имен для парсинга
         this.languagesNames = languagesNames;
         dataDownloader = SOvFDataDownloader.getInstance();
     }
+
 
     @Override
     public List<LanguageDataPrototype> parseWholeData() {
@@ -37,6 +38,10 @@ public class SOvFRatingParser implements LanguageRatingParser {
         return wholeDataParser.apply(data, languagesNames);
     }
 
+    @Override
+    public List<LanguageDataPrototype> parseWholeData(String data) {
+        return wholeDataParser.apply(data,languagesNames);
+    }
 
 
     //date pattens

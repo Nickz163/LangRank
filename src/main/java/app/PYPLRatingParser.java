@@ -25,6 +25,13 @@ public class PYPLRatingParser implements LanguageRatingParser {
         return languages;
     }
 
+    @Override
+    public List<LanguageDataPrototype> parseWholeData(String data) {
+        List<LanguageDataPrototype> languages = directFormatParser.andThen(wholeDataParser).apply(data);
+        return languages;
+    }
+
+
 
     private static final Pattern DIRECT_PATTERN = Pattern.compile("(?<= graphData = ).*(?=;)");
     private static final Pattern DELETE_COMMENTS_PATTERN = Pattern.compile("//.*? (?='|]|\\[)"); // check lazy quantification

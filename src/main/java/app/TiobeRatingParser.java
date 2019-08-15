@@ -53,6 +53,11 @@ public class TiobeRatingParser implements LanguageRatingParser {
         return wholeDataParser.apply(data);
     }
 
+    @Override
+    public List<LanguageDataPrototype> parseWholeData(String data) {
+        return wholeDataParser.apply(data);
+    }
+
     private Function<String, LanguageDataPrototype> lineParser = str -> {
 
         Matcher nameMatcher = NAME_PATTERN.matcher(str);
