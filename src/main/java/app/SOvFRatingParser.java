@@ -58,7 +58,6 @@ public class SOvFRatingParser implements LanguageRatingParser {
         Matcher yearMatcher = YEAR_PATTERN.matcher(builder.toString());
         Matcher monthMatcher = MONTH_PATTERN.matcher(builder.toString());
 
-//        builder = new StringBuilder();
 
         while (yearMatcher.find() && monthMatcher.find())
             dates.add(yearMatcher.group() + "," + monthMatcher.group() + "," + "1");
@@ -76,8 +75,6 @@ public class SOvFRatingParser implements LanguageRatingParser {
         Map<String, List<String>> data = new HashMap<>();
 
         List<String> values = new ArrayList<>();
-//        Pattern NAME_PATTERN = Pattern.compile("(?<=\").*(?=\")");
-//        Pattern VALUE_PATTERN = Pattern.compile("\\d+\\.?\\d*"); // d+  -   d{1,}
 
         Matcher valueMatcher = VALUE_PATTERN.matcher(str);
         Matcher nameMatcher = NAME_PATTERN.matcher(str);

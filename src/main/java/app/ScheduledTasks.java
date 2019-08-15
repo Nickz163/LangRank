@@ -1,29 +1,40 @@
 package app;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
+public class ScheduledTasks {
 
-@Repository
-public class MainRunner implements CommandLineRunner {
+    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
 
     @Autowired
     private LanguageDataRepository repository;
 
-    @Override
-    public void run(String... args) throws Exception {
+
+//    @Scheduled(cron = "* * * */14 * *")
+
+
+//    // mills|sec|min|hour|days|weeks
+//    @Scheduled(fixedRate = 1000 * 60 * 60 * 24 * 7 * 2, initialDelay = 1000)
+
+    // mills|sec|min|hour|days|weeks
+    @Scheduled(fixedRate = (1000 * 60 * 60 * 24 * 7 * 2), initialDelay = 1000)
+    public void run() {
+
+        System.out.println("Started");
 
         TiobeRatingParser tiobeParser = app.TiobeRatingParser.getInstance();
         List<LanguageDataPrototype> tiobeData = tiobeParser.parseWholeData();
 
         List<String> languagesNames = tiobeData.stream()
-                .map(lang -> lang.getName())
+                .map(LanguageDataPrototype::getName)
                 .collect(Collectors.toList());
 
         SOvFRatingParser sOvFRatingParser = SOvFRatingParser.getInstance(languagesNames);
@@ -44,7 +55,10 @@ public class MainRunner implements CommandLineRunner {
         System.out.println("Tiobe languageData (findAll): ");
         System.out.println("------------------------------");
 
+
         for (LanguageDataPrototype languageDataPrototype : repository.findAllBySource("TIOBE"))
-            System.out.println(languageDataPrototype);
+            logger.info("Base entry:    " + languageDataPrototype);
+
     }
+
 }
