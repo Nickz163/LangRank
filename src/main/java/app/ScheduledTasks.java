@@ -21,14 +21,11 @@ public class ScheduledTasks {
 //    @Scheduled(cron = "* * * */14 * *")
 
 
-//    // mills|sec|min|hour|days|weeks
-//    @Scheduled(fixedRate = 1000 * 60 * 60 * 24 * 7 * 2, initialDelay = 1000)
-
     // mills|sec|min|hour|days|weeks
     @Scheduled(fixedRate = (1000 * 60 * 60 * 24 * 7 * 2), initialDelay = 1000)
     public void run() {
 
-        System.out.println("Started");
+        logger.info("App started");
 
         TiobeRatingParser tiobeParser = app.TiobeRatingParser.getInstance();
         List<LanguageDataPrototype> tiobeData = tiobeParser.parseWholeData();
@@ -50,10 +47,6 @@ public class ScheduledTasks {
         repository.saveAll(tiobeData);
         repository.saveAll(sovfData);
         repository.saveAll(pyplData);
-
-
-        System.out.println("Tiobe languageData (findAll): ");
-        System.out.println("------------------------------");
 
 
         for (LanguageDataPrototype languageDataPrototype : repository.findAllBySource("TIOBE"))
