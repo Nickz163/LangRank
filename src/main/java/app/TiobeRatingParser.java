@@ -52,7 +52,6 @@ public class TiobeRatingParser implements LanguageRatingParser {
 
         while (dateMatcher.find() && valueMatcher.find())
             language.appendData(dateMatcher.group().replaceAll("\\s", ""), valueMatcher.group());
-//        language.printLang();
 
         return language;
     };

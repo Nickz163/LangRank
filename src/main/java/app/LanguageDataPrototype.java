@@ -24,18 +24,11 @@ public class LanguageDataPrototype {
         id = (sourceName + name).toLowerCase(); // todo: temporary solution
     }
 
-//    public static app.LanguageDataPrototype getInstance(String name) {
-//        return new app.LanguageDataPrototype(name);
-//    }
-
 
     public void setData(Map<String, Double> data) {
         this.data = data;
     }
 
-//    public void setSource(String sourceName) {
-//        this.source = sourceName;
-//    }
 
     public LanguageDataPrototype appendData(String date, Double value) {
         data.put(date, value);
@@ -54,20 +47,6 @@ public class LanguageDataPrototype {
     public Map<String, Double> getData() {
         return data;
     }
-
-    public void printLang() {
-        System.out.println(name);
-        data.forEach((date, value) -> System.out.println(date + ":" + value + "; "));
-    }
-
-    public void printDataInfo() {
-        System.out.println(data.size());
-    }
-
-//    @Override
-//    public String toString() {
-//        return source + " | " + name + " data: " + data + "\n";
-//    }
 
 
     @Override

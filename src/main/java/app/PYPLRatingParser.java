@@ -21,14 +21,6 @@ public class PYPLRatingParser implements LanguageRatingParser {
         this.dataDownloader = dataDownloader;
     }
 
-    // todo: use spring solution (in the future)
-//    public PYPLRatingParser() {
-//        dataDownloader = PYPLDataDownloader.getInstance();
-//    }
-//
-//    public static PYPLRatingParser getInstance() {
-//        return new PYPLRatingParser();
-//    }
 
     @Override
     public List<LanguageDataPrototype> parseWholeData() {
@@ -56,12 +48,10 @@ public class PYPLRatingParser implements LanguageRatingParser {
         Matcher matcher = DIRECT_PATTERN.matcher(str);
         String newStr = "";
         while (matcher.find()) {
-            // newStr = str.substring(matcher.start(), matcher.end());
             newStr = matcher.group();
         }
-        Matcher deleterMatcher = DELETE_COMMENTS_PATTERN.matcher(newStr);
-        return deleterMatcher.replaceAll("").replaceAll("'Date', ", "");
-        //  return newStr;
+        Matcher deleteMatcher = DELETE_COMMENTS_PATTERN.matcher(newStr);
+        return deleteMatcher.replaceAll("").replaceAll("'Date', ", "");
     };
 
 

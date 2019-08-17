@@ -5,7 +5,6 @@ import java.io.*;
 public class FileDataWriter {
        final private String DEFAULT_DIR_PATH =  System.getProperty("user.dir") + File.separator + "LanguageDataSet";
 
-    //final File defaultDirectory = new File("./LanguageDataSet");
     final File defaultDirectory = new File(DEFAULT_DIR_PATH);
 
     public static FileDataWriter getInstance() {

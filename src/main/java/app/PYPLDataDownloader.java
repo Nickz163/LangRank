@@ -27,18 +27,6 @@ public class PYPLDataDownloader implements LanguageDataDownloader {
         }
     }
 
-//    public static PYPLDataDownloader getInstance() {
-//        try {
-//            document = Jsoup.connect(PYPL_ALL_URL)
-//                    .userAgent("Chrome/4.0.249.0 Safari/532.5")
-//                    .referrer("http://www.google.com")
-//                    .get();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return new PYPLDataDownloader();
-//    }
-
 
     @Override
     public String getData() {
