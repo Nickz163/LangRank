@@ -1,22 +1,34 @@
 package app;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Service("PYPLParser")
 public class PYPLRatingParser implements LanguageRatingParser {
 
     private final String SOURCE_NAME = "PYPL";
-    private LanguageDataDownloader dataDownloader;
 
-    public PYPLRatingParser() {
-        dataDownloader = PYPLDataDownloader.getInstance();
+    private final LanguageDataDownloader dataDownloader;
+
+    @Autowired
+    public PYPLRatingParser(@Qualifier("PYPLDownloader") LanguageDataDownloader dataDownloader) {
+        this.dataDownloader = dataDownloader;
     }
 
-    public static PYPLRatingParser getInstance() {
-        return new PYPLRatingParser();
-    }
+    // todo: use spring solution (in the future)
+//    public PYPLRatingParser() {
+//        dataDownloader = PYPLDataDownloader.getInstance();
+//    }
+//
+//    public static PYPLRatingParser getInstance() {
+//        return new PYPLRatingParser();
+//    }
 
     @Override
     public List<LanguageDataPrototype> parseWholeData() {

@@ -1,6 +1,10 @@
 package app;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -8,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-//@Service
+@Service("TiobeParser")
 public class TiobeRatingParser implements LanguageRatingParser {
 
 
@@ -19,33 +23,13 @@ public class TiobeRatingParser implements LanguageRatingParser {
     private static final Pattern DATE_PATTERN = Pattern.compile("(?<=UTC\\().+?(?=\\))");
     private static final Pattern VALUE_PATTERN = Pattern.compile("(?<=\\),\\s).+?(?=])");
 
-    private LanguageDataDownloader dataDownloader;
+    private final LanguageDataDownloader dataDownloader;
 
-//    String sourceData;
-
-//    public TiobeRatingParser(@Value("$[parser.tiobe.name]")String sourceName) {
-//        this.SOURCE_NAME = sourceName;
-//    }
-
-//    final private String SOURCE_NAME = "TIOBE";
-
-    //TODO = examle
-//    @Value("$[parser.tiobe.name]")
-//    String SourceName;
-
-
-//    final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/"; // warning!
-//    private static Document document;
-
-    // todo: use spring solution (in the future)
-    private TiobeRatingParser() {
-        this.dataDownloader = TiobeDataDownloader.getInstance();
+    @Autowired
+    public TiobeRatingParser(@Qualifier("TiobeDownloader") LanguageDataDownloader dataDownloader) {
+        this.dataDownloader = dataDownloader;
     }
 
-    public static TiobeRatingParser getInstance() {
-        return new TiobeRatingParser();
-
-    }
 
     @Override
     public List<LanguageDataPrototype> parseWholeData() {
@@ -76,7 +60,6 @@ public class TiobeRatingParser implements LanguageRatingParser {
     private Function<String, List<LanguageDataPrototype>> wholeDataParser = str -> {
         String lines[] = str.split("}, \\{");
         List<LanguageDataPrototype> languages = Arrays.stream(lines).map(lineParser).collect(Collectors.toList());
-        // languages.forEach(a->a.printLang());
         return languages;
     };
 

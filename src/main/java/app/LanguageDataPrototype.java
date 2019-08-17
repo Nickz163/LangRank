@@ -2,6 +2,7 @@ package app;
 
 import org.springframework.data.annotation.Id;
 
+import javax.annotation.Generated;
 import java.util.*;
 
 public class LanguageDataPrototype {
@@ -18,8 +19,9 @@ public class LanguageDataPrototype {
     }
 
     public LanguageDataPrototype(String name, String sourceName) {
-        this.name = name.toLowerCase();//todo check this
+        this.name = name.toLowerCase();
         this.source = sourceName;
+        id = (sourceName + name).toLowerCase(); // todo: temporary solution
     }
 
 //    public static app.LanguageDataPrototype getInstance(String name) {

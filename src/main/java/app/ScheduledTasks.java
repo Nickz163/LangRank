@@ -3,19 +3,38 @@ package app;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Component
 public class ScheduledTasks {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
 
+    private final LanguageDataRepository repository;
+
+
+    private LanguageRatingParser tiobeParser;
+    private LanguageRatingParser pyplRatingParser;
+    private LanguageRatingParser sovfRatingParser;
+
     @Autowired
-    private LanguageDataRepository repository;
+    public ScheduledTasks(LanguageDataRepository repository,
+                          @Qualifier("TiobeParser") LanguageRatingParser tiobeParsrer,
+                          @Qualifier("PYPLParser") LanguageRatingParser pyplRatingParser,
+                          @Qualifier("SOvFParser") LanguageRatingParser sovfRatingParser) {
+        this.repository = repository;
+        this.tiobeParser = tiobeParsrer;
+        this.pyplRatingParser = pyplRatingParser;
+        this.sovfRatingParser = sovfRatingParser;
+    }
 
 
 //    @Scheduled(cron = "* * * */14 * *")
@@ -27,30 +46,19 @@ public class ScheduledTasks {
 
         logger.info("App started");
 
-        TiobeRatingParser tiobeParser = app.TiobeRatingParser.getInstance();
         List<LanguageDataPrototype> tiobeData = tiobeParser.parseWholeData();
-
-        List<String> languagesNames = tiobeData.stream()
-                .map(LanguageDataPrototype::getName)
-                .collect(Collectors.toList());
-
-        SOvFRatingParser sOvFRatingParser = SOvFRatingParser.getInstance(languagesNames);
-        List<LanguageDataPrototype> sovfData = sOvFRatingParser.parseWholeData();
-
-
-        PYPLRatingParser pyplRatingParser = PYPLRatingParser.getInstance();
         List<LanguageDataPrototype> pyplData = pyplRatingParser.parseWholeData();
+        List<LanguageDataPrototype> sovfData = sovfRatingParser.parseWholeData();
 
-
-        repository.deleteAll();
+//       repository.deleteAll();
 
         repository.saveAll(tiobeData);
-        repository.saveAll(sovfData);
         repository.saveAll(pyplData);
+        repository.saveAll(sovfData);
 
 
-        for (LanguageDataPrototype languageDataPrototype : repository.findAllBySource("TIOBE"))
-            logger.info("Base entry:    " + languageDataPrototype);
+//        for (LanguageDataPrototype languageDataPrototype : repository.findAllBySource("TIOBE"))
+//            logger.info("Base entry:    " + languageDataPrototype);
 
     }
 

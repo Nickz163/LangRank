@@ -3,20 +3,25 @@ package app;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Repository("TiobeDownloader")
 public class TiobeDataDownloader implements LanguageDataDownloader {
 
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/";
     private static Document document;
     private static Pattern plainCutPattern = Pattern.compile("\\{name :.*}"); // problems with khanda
 
-    public static TiobeDataDownloader getInstance() {
+
+    @PostConstruct
+    public void init() {
         try {
             document = Jsoup.connect(TIOBE_URL)
                     .userAgent("Chrome/4.0.249.0 Safari/532.5")
@@ -25,7 +30,6 @@ public class TiobeDataDownloader implements LanguageDataDownloader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new TiobeDataDownloader();
     }
 
 

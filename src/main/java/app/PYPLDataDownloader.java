@@ -2,15 +2,21 @@ package app;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 
+
+@Repository("PYPLDownloader")
 public class PYPLDataDownloader implements LanguageDataDownloader {
 
     final private static String PYPL_ALL_URL = "https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js";
     private static Document document;
 
-    public static PYPLDataDownloader getInstance() {
+
+    @PostConstruct
+    public void init() {
         try {
             document = Jsoup.connect(PYPL_ALL_URL)
                     .userAgent("Chrome/4.0.249.0 Safari/532.5")
@@ -19,8 +25,19 @@ public class PYPLDataDownloader implements LanguageDataDownloader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new PYPLDataDownloader();
     }
+
+//    public static PYPLDataDownloader getInstance() {
+//        try {
+//            document = Jsoup.connect(PYPL_ALL_URL)
+//                    .userAgent("Chrome/4.0.249.0 Safari/532.5")
+//                    .referrer("http://www.google.com")
+//                    .get();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return new PYPLDataDownloader();
+//    }
 
 
     @Override

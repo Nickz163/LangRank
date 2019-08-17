@@ -1,5 +1,11 @@
 package app;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -7,28 +13,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Service("SOvFParser")
 public class SOvFRatingParser implements LanguageRatingParser {
 
     private final String SOURCE_NAME = "Stack_Overflow";
     private LanguageDataDownloader dataDownloader;
 
-    private List<String> languagesNames;
+    private  List<String> languagesNames;
 
-
-    // Todo: use separate file for languages names
-    public static SOvFRatingParser getInstance(List<String> names) {
-        return new SOvFRatingParser(names);
-    }
-
-
-    /**
-     * private constructor for getInstance
-     *
-     * @param languagesNames names for parsing
-     */
-    private SOvFRatingParser(List<String> languagesNames) { // todo: использовать данный список имен для парсинга
-        this.languagesNames = languagesNames;
-        dataDownloader = SOvFDataDownloader.getInstance();
+    @Autowired
+    public SOvFRatingParser(@Qualifier("SOvFDownloader") LanguageDataDownloader dataDownloader,
+                            @Value("${languages.names}") String names) {
+        this.dataDownloader = dataDownloader;
+        languagesNames = Arrays.asList(names.split(","));
+//        languagesNames.forEach(System.out::println);
     }
 
 
