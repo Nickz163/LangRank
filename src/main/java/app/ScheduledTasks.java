@@ -9,8 +9,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import org.springframework.data.mongodb.core.query.Query;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Component
@@ -21,19 +25,15 @@ public class ScheduledTasks {
     private final LanguageDataRepository repository;
 
 
-    private LanguageRatingParser tiobeParser;
-    private LanguageRatingParser pyplRatingParser;
-    private LanguageRatingParser sovfRatingParser;
 
-    @Autowired
-    public ScheduledTasks(LanguageDataRepository repository,
-                          @Qualifier("TiobeParser") LanguageRatingParser tiobeParsrer,
-                          @Qualifier("PYPLParser") LanguageRatingParser pyplRatingParser,
-                          @Qualifier("SOvFParser") LanguageRatingParser sovfRatingParser) {
+    private List<LanguageRatingParser> dataParsers;
+
+
+
+   @Autowired
+    public ScheduledTasks(LanguageDataRepository repository, List<LanguageRatingParser> dataParsers) {
         this.repository = repository;
-        this.tiobeParser = tiobeParsrer;
-        this.pyplRatingParser = pyplRatingParser;
-        this.sovfRatingParser = sovfRatingParser;
+        this.dataParsers = dataParsers;
     }
 
 
@@ -46,15 +46,12 @@ public class ScheduledTasks {
 
         logger.info("App started");
 
-        List<LanguageDataPrototype> tiobeData = tiobeParser.parseWholeData();
-        List<LanguageDataPrototype> pyplData = pyplRatingParser.parseWholeData();
-        List<LanguageDataPrototype> sovfData = sovfRatingParser.parseWholeData();
 
-//       repository.deleteAll();
+        List<LanguageDataPrototype> data = dataParsers.stream()
+                .flatMap(parser ->  parser.parseWholeData().stream()).collect(Collectors.toList());
 
-        repository.saveAll(tiobeData);
-        repository.saveAll(pyplData);
-        repository.saveAll(sovfData);
+        repository.saveAll(data);
+
 
 
 //        for (LanguageDataPrototype languageDataPrototype : repository.findAllBySource("TIOBE"))
