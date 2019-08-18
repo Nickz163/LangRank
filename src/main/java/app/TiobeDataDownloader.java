@@ -3,6 +3,7 @@ package app;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,9 @@ public class TiobeDataDownloader implements LanguageDataDownloader {
     final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/";
     private static Document document;
     private static Pattern plainCutPattern = Pattern.compile("\\{name :.*}"); // problems with khanda
+
+    @Autowired
+    private FileDataWriter fileDataWriter;
 
 
     @PostConstruct
@@ -58,6 +62,6 @@ public class TiobeDataDownloader implements LanguageDataDownloader {
 
     @Override
     public void saveDataInPlainFormat() {
-        FileDataWriter.getInstance().writeData("TiobeWholeData.txt", getPlainData(dataSupplier.get()));
+        fileDataWriter.writeData("TiobeWholeData.txt", getPlainData(dataSupplier.get()));
     }
 }

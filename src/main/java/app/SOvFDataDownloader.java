@@ -1,5 +1,6 @@
 package app;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -15,6 +16,9 @@ import java.util.stream.Collectors;
 public class SOvFDataDownloader implements LanguageDataDownloader {
 
     private static final String SOvF_ALL_URL = "https://cdn.sstatic.net/insights/data/month_tag_percents.json";
+
+    @Autowired
+    private FileDataWriter fileDataWriter;
 
 
     private Supplier<String> dataSupplier = () -> {
@@ -42,6 +46,6 @@ public class SOvFDataDownloader implements LanguageDataDownloader {
 
     @Override
     public void saveDataInPlainFormat() {
-        FileDataWriter.getInstance().writeData("SOvFWholeData.txt", dataSupplier.get());
+        fileDataWriter.writeData("SOvFWholeData.txt", dataSupplier.get());
     }
 }
