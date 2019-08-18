@@ -48,7 +48,8 @@ public class ScheduledTasks {
 
 
         List<LanguageDataPrototype> data = dataParsers.stream()
-                .flatMap(parser ->  parser.parseWholeData().stream()).collect(Collectors.toList());
+                .flatMap(parser ->  parser.parseWholeData().stream())
+                .collect(Collectors.toList());
 
         repository.saveAll(data);
 
