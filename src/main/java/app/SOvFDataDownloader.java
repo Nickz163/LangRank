@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,20 +21,15 @@ public class SOvFDataDownloader implements LanguageDataDownloader {
 
 
     private Supplier<String> dataSupplier = () -> {
-        String data = "";
+
         try (BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(new URL(SOvF_ALL_URL).openStream()))) {
-            //  System.out.println(bufferedReader.readLine());
-            data = bufferedReader.lines().collect(Collectors.joining());
-            // System.out.println(data);
+            String data = bufferedReader.lines().collect(Collectors.joining());
+            return data;
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DownloadException (Can't download data from Stack Overflow)");
         }
-        return data;
-
     };
 
 

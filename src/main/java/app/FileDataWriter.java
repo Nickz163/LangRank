@@ -23,7 +23,7 @@ public class FileDataWriter {
                 new FileOutputStream(writableFile)))) {
             writer.write(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Can't write data in file (check FileDataWriter)");
         }
     }
 }
