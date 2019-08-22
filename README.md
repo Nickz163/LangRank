@@ -1,18 +1,55 @@
-    //RU 
 
-Источники сбора информации:
-- 
-+ https://www.tiobe.com/tiobe-index
-+ http://pypl.github.io/PYPL.html
-  + data-source: https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js
-  + license: https://creativecommons.org/licenses/by/3.0/ 
-_
+    //RU
+ 
+ # Lang Rank #
+Модуль для сбора данных популярности языков программированя. Сбор данных осуществляется из нескольких уникальных 
+источников, которые не пересекаются между собой. 
+Данные собираются согласно расписанию и записываются в базу данных. 
+  
+ ## Используемые технологии ## 
+  - Java 8 
+  - Проект основан на Spring Boot
+  - В качестве базы данных используется MongoDB 
+  - JSoup
+  - Управление зависимостями - Maven
+  
+ ## Источники сбора информации ##
+ 
+ ##### TIOBE #####
+ Компания TIOBE специализируется на оценке и отслеживании качества программного обеспечения. 
+ Помимо оценки качества кода программного продукта компания TIOBE является автором одного
+ из самых известных индексов популярности языков программирования – TIOBE Index.
+ 
+ Данный индекс оценивает популярность языков программирования на основе подсчета тематических статей, 
+ которые содержат название языка. 
+ При формировании индекса поиск статей происходит в наиболее посещаемых порталах, 
+ а именно: Wikipedia, Google, Yahoo!, Bing, Baidu, Blogger, Amazon, YouTube. 
+ 
+Ссылки:
++ https://www.tiobe.com/tiobe-index - основная страница. 
++ Условия использования данных (https://www.tiobe.com/tiobe-index) - внизу страницы. 
+
+ ##### PYPL #####
+PYPL – индекс, который разработал Пьер Карбонелл.
+ Индекс создан на основе анализа того, как часто пользователи ищут обучающие материалы по 
+ определенному языку программирования в поисковой системе Google. Создатель индекса считает,
+  что чем больше запросов в поисковые системы, целью которых является поиск обучающих материалов, 
+  тем больше предполагаемая популярность языка.
+
+Ссылки: 
++ http://pypl.github.io/PYPL.html  - основная страница 
++ data-source: https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js 
++ license: https://creativecommons.org/licenses/by/3.0/ 
+
+
+##### Stack_Overflow #####
+Stack Overflow Insights – подразделение Stack Overflow, 
+занимающееся сбором и анализом данных, полученных в ходе работы ресурса.
+Оценка популярности языков программирования происходит путем анализа тегов созданных тем. 
+
+
++ https://insights.stackoverflow.com/trends?tags=r%2Cstatistics - основная страница
++ data-source: https://cdn.sstatic.net/insights/data/month_tag_percents.json" 
+
 
   
-    //EN  
-Data sources 
-- 
-+ https://www.tiobe.com/tiobe-index
-+ http://pypl.github.io/PYPL.html
-  + data-source: https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js
-  + license: https://creativecommons.org/licenses/by/3.0/ 
