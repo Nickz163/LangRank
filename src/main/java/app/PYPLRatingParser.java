@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,7 +14,6 @@ import java.util.regex.Pattern;
 public class PYPLRatingParser implements LanguageRatingParser {
 
     private final String SOURCE_NAME = "PYPL";
-
     private final LanguageDataDownloader dataDownloader;
 
     @Autowired
@@ -21,24 +21,19 @@ public class PYPLRatingParser implements LanguageRatingParser {
         this.dataDownloader = dataDownloader;
     }
 
-
     @Override
-    public List<LanguageDataPrototype> parseWholeData() {
+    public List<LanguageData> parseWholeData() {
         String data = dataDownloader.getData();
-        List<LanguageDataPrototype> languages = directFormatParser.andThen(wholeDataParser).apply(data);
-        return languages;
+        return directFormatParser.andThen(wholeDataParser).apply(data);
     }
 
     @Override
-    public List<LanguageDataPrototype> parseWholeData(String data) {
-        List<LanguageDataPrototype> languages = directFormatParser.andThen(wholeDataParser).apply(data);
-        return languages;
+    public List<LanguageData> parseWholeData(String data) {
+        return directFormatParser.andThen(wholeDataParser).apply(data);
     }
-
-
 
     private static final Pattern DIRECT_PATTERN = Pattern.compile("(?<= graphData = ).*(?=;)");
-    private static final Pattern DELETE_COMMENTS_PATTERN = Pattern.compile("//.*? (?='|]|\\[)"); // check lazy quantification
+    private static final Pattern DELETE_COMMENTS_PATTERN = Pattern.compile("//.*? (?='|]|\\[)");
 
     /**
      * Plain data parsing with few adjustments
@@ -54,25 +49,22 @@ public class PYPLRatingParser implements LanguageRatingParser {
         return deleteMatcher.replaceAll("").replaceAll("'Date', ", "");
     };
 
-
-
-    private static final  Pattern NAME_PATTERN = Pattern.compile("(?<=(\\[|\\s)').*?(?=')"); // lazy quantification
-    private static final Pattern DATE_PATTERN = Pattern.compile("(?<=Date\\().*?(?=\\))"); // lazy again
+    private static final  Pattern NAME_PATTERN = Pattern.compile("(?<=(\\[|\\s)').*?(?=')");
+    private static final Pattern DATE_PATTERN = Pattern.compile("(?<=Date\\().*?(?=\\))");
     private static final Pattern VALUE_PATTERN = Pattern.compile("(0\\.\\d+)");
 
-
-    private Function<String, List<LanguageDataPrototype>> wholeDataParser = str -> {
+    private Function<String, List<LanguageData>> wholeDataParser = str -> {
 
         Matcher nameMatcher = NAME_PATTERN.matcher(str);
         Matcher dateMatcher = DATE_PATTERN.matcher(str);
         Matcher valueMatcher = VALUE_PATTERN.matcher(str);
 
-        List<LanguageDataPrototype> languages = new ArrayList<>();
+        List<LanguageData> languages = new ArrayList<>();
         List<String> dates = new ArrayList<>();
         List<Double> values = new ArrayList<>();
 
         while (nameMatcher.find()) {
-            languages.add(new LanguageDataPrototype(nameMatcher.group(), SOURCE_NAME));
+            languages.add(new LanguageData(nameMatcher.group(), SOURCE_NAME));
         }
         while (dateMatcher.find())
             dates.add(dateMatcher.group());
@@ -85,7 +77,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
                 languages.get(i).appendData(dates.get(k / languages.size()), values.get(k));//// check
 
 
-        return languages; // old string
+        return languages;
     };
 
 }

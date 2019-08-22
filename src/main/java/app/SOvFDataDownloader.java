@@ -15,23 +15,21 @@ import java.util.stream.Collectors;
 public class SOvFDataDownloader implements LanguageDataDownloader {
 
     private static final String SOvF_ALL_URL = "https://cdn.sstatic.net/insights/data/month_tag_percents.json";
+    private final FileDataWriter fileDataWriter;
 
     @Autowired
-    private FileDataWriter fileDataWriter;
-
+    public SOvFDataDownloader(FileDataWriter fileDataWriter) {
+        this.fileDataWriter = fileDataWriter;
+    }
 
     private Supplier<String> dataSupplier = () -> {
-
         try (BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(new URL(SOvF_ALL_URL).openStream()))) {
-            String data = bufferedReader.lines().collect(Collectors.joining());
-            return data;
-
+            return bufferedReader.lines().collect(Collectors.joining());
         } catch (IOException e) {
             throw new RuntimeException("DownloadException (Can't download data from Stack Overflow)");
         }
     };
-
 
     @Override
     public String getData() {

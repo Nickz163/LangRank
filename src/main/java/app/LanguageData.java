@@ -2,40 +2,37 @@ package app;
 
 import org.springframework.data.annotation.Id;
 
-import javax.annotation.Generated;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class LanguageDataPrototype {
+public class LanguageData {
 
     @Id
     private String id;
 
     private String name;
     private String source;
+    private Map<String, Double> data = new LinkedHashMap<>();
 
-    private Map<String, Double> data = new LinkedHashMap<>();// temporary
-
-    public LanguageDataPrototype() {
+    public LanguageData() {
     }
 
-    public LanguageDataPrototype(String name, String sourceName) {
+    public LanguageData(String name, String sourceName) {
         this.name = name.toLowerCase();
         this.source = sourceName;
         id = (sourceName + name).toLowerCase(); // todo: temporary solution
     }
 
-
     public void setData(Map<String, Double> data) {
         this.data = data;
     }
 
-
-    public LanguageDataPrototype appendData(String date, Double value) {
+    public LanguageData appendData(String date, Double value) {
         data.put(date, value);
         return this;
     }
 
-    public LanguageDataPrototype appendData(String date, String value) {
+    public LanguageData appendData(String date, String value) {
         data.put(date, Double.parseDouble(value));
         return this;
     }
@@ -48,10 +45,9 @@ public class LanguageDataPrototype {
         return data;
     }
 
-
     @Override
     public String toString() {
-        return "LanguageDataPrototype{" +
+        return "LanguageData{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", source='" + source + '\'' +

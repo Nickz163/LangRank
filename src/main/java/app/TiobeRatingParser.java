@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 @Service("TiobeParser")
 public class TiobeRatingParser implements LanguageRatingParser {
 
-
-    //todo: put in properties
     private final String SOURCE_NAME = "TIOBE";
 
     private static final Pattern NAME_PATTERN = Pattern.compile("(?<=name : ').+(?=')");
@@ -30,36 +28,31 @@ public class TiobeRatingParser implements LanguageRatingParser {
         this.dataDownloader = dataDownloader;
     }
 
-
     @Override
-    public List<LanguageDataPrototype> parseWholeData() {
+    public List<LanguageData> parseWholeData() {
         String data = dataDownloader.getData();
         return wholeDataParser.apply(data);
     }
 
     @Override
-    public List<LanguageDataPrototype> parseWholeData(String data) {
+    public List<LanguageData> parseWholeData(String data) {
         return wholeDataParser.apply(data);
     }
 
-    private Function<String, LanguageDataPrototype> lineParser = str -> {
-
+    private Function<String, LanguageData> lineParser = str -> {
         Matcher nameMatcher = NAME_PATTERN.matcher(str);
         Matcher dateMatcher = DATE_PATTERN.matcher(str);
         Matcher valueMatcher = VALUE_PATTERN.matcher(str);
 
-        LanguageDataPrototype language = new LanguageDataPrototype(nameMatcher.find() ? nameMatcher.group() : "NULL", SOURCE_NAME);
-
+        LanguageData language = new LanguageData(nameMatcher.find() ? nameMatcher.group() : "NULL", SOURCE_NAME);
         while (dateMatcher.find() && valueMatcher.find())
             language.appendData(dateMatcher.group().replaceAll("\\s", ""), valueMatcher.group());
-
         return language;
     };
 
-    private Function<String, List<LanguageDataPrototype>> wholeDataParser = str -> {
+    private Function<String, List<LanguageData>> wholeDataParser = str -> {
         String lines[] = str.split("}, \\{");
-        List<LanguageDataPrototype> languages = Arrays.stream(lines).map(lineParser).collect(Collectors.toList());
-        return languages;
+        return Arrays.stream(lines).map(lineParser).collect(Collectors.toList());
     };
 
 

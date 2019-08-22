@@ -15,33 +15,32 @@ import java.util.stream.Collectors;
 @Repository("TiobeDownloader")
 public class TiobeDataDownloader implements LanguageDataDownloader {
 
-    final private static String TIOBE_URL = "https://tiobe.com/tiobe-index/";
-    private static Pattern plainCutPattern = Pattern.compile("\\{name :.*}"); // problems with khanda
+    private static final String TIOBE_URL = "https://tiobe.com/tiobe-index/";
+    private static Pattern plainCutPattern = Pattern.compile("\\{name :.*}");
+
+    private final FileDataWriter fileDataWriter;
 
     @Autowired
-    private FileDataWriter fileDataWriter;
-
-
+    public TiobeDataDownloader(FileDataWriter fileDataWriter) {
+        this.fileDataWriter = fileDataWriter;
+    }
 
     private Supplier<Document> documentSupplier = () -> {
         try {
-            Document document = Jsoup.connect(TIOBE_URL)
+            return Jsoup.connect(TIOBE_URL)
                     .userAgent("Chrome/4.0.249.0 Safari/532.5")
                     .referrer("http://www.google.com")
                     .get();
-            return document;
         } catch (IOException e) {
             throw new RuntimeException("DownloadException (Can't download data from TIOBE)");
         }
     };
-
 
     private Supplier<String> dataSupplier = () -> documentSupplier.get().select("script").stream()
             .flatMap(element -> element.dataNodes().stream())
             .filter(dataNode -> dataNode.getWholeData().contains("$(function () {"))
             .map(DataNode::getWholeData)
             .collect(Collectors.joining());
-
 
     private String getPlainData(String str) {
         Matcher matcher = plainCutPattern.matcher(str);
@@ -52,12 +51,10 @@ public class TiobeDataDownloader implements LanguageDataDownloader {
         return stringBuilder.toString();
     }
 
-
     @Override
     public String getData() {
         return getPlainData(dataSupplier.get());
     }
-
 
     @Override
     public void saveDataInPlainFormat() {
