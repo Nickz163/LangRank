@@ -31,6 +31,7 @@ public class ScheduledTasks {
                 .collect(Collectors.toList());
 
         repository.saveAll(data);
+        logger.info("Launch Success");
     }
 
 }
