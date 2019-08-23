@@ -3,6 +3,7 @@ package app;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Service("TiobeParser")
 public class TiobeRatingParser implements LanguageRatingParser {
 
-    private static final String SOURCE_NAME = "TIOBE";
+    private  final String SOURCE_NAME;
 
     private static final Pattern NAME_PATTERN = Pattern.compile("(?<=name : ').+(?=')");
     private static final Pattern DATE_PATTERN = Pattern.compile("(?<=UTC\\().+?(?=\\))");
@@ -24,8 +25,10 @@ public class TiobeRatingParser implements LanguageRatingParser {
     private final LanguageDataDownloader dataDownloader;
 
     @Autowired
-    public TiobeRatingParser(@Qualifier("TiobeDownloader") LanguageDataDownloader dataDownloader) {
+    public TiobeRatingParser(@Qualifier("TiobeDownloader") LanguageDataDownloader dataDownloader,
+                             @Value("${sources.tiobe.name}") String sourceName) {
         this.dataDownloader = dataDownloader;
+        this.SOURCE_NAME = sourceName;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class TiobeRatingParser implements LanguageRatingParser {
         Matcher dateMatcher = DATE_PATTERN.matcher(str);
         Matcher valueMatcher = VALUE_PATTERN.matcher(str);
 
-        LanguageData language = new LanguageData(nameMatcher.find() ? nameMatcher.group() : "NULL", SOURCE_NAME);
+        LanguageData language = new LanguageData(nameMatcher.find() ? nameMatcher.group() : "NULL", TiobeRatingParser.this.SOURCE_NAME);
         while (dateMatcher.find() && valueMatcher.find())
             language.appendData(dateMatcher.group().replaceAll("\\s", ""), valueMatcher.group());
         return language;

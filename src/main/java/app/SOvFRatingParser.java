@@ -15,15 +15,17 @@ import java.util.stream.Collectors;
 @Service("SOvFParser")
 public class SOvFRatingParser implements LanguageRatingParser {
 
-    private static  final String SOURCE_NAME = "Stack_Overflow";
+    private final String SOURCE_NAME;
     private final LanguageDataDownloader dataDownloader;
-    private List<String> languagesNames;
+    private final List<String> languagesNames;
 
     @Autowired
     public SOvFRatingParser(@Qualifier("SOvFDownloader") LanguageDataDownloader dataDownloader,
-                            @Value("${languages.names}") String names) {
+                            @Value("${languages.names}") String names,
+                            @Value("${sources.stovf.name}") String sourceName) {
         this.dataDownloader = dataDownloader;
-        languagesNames = Arrays.asList(names.split(","));
+        this.SOURCE_NAME = sourceName;
+        this.languagesNames = Arrays.asList(names.split(","));
     }
 
     @Override
@@ -103,7 +105,7 @@ public class SOvFRatingParser implements LanguageRatingParser {
 
         langNames.stream().forEach(lang -> {
 
-            LanguageData language = new LanguageData(lang, SOURCE_NAME);
+            LanguageData language = new LanguageData(lang, SOvFRatingParser.this.SOURCE_NAME);
 
             List<String> values = nameAndValues.get(lang);
             for (int i = 0; i < values.size(); i++) {

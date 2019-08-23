@@ -2,6 +2,7 @@ package app;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,12 +14,14 @@ import java.util.regex.Pattern;
 @Service("PYPLParser")
 public class PYPLRatingParser implements LanguageRatingParser {
 
-    private static final String SOURCE_NAME = "TIOBE";
+    private final String SOURCE_NAME;
     private final LanguageDataDownloader dataDownloader;
 
     @Autowired
-    public PYPLRatingParser(@Qualifier("PYPLDownloader") LanguageDataDownloader dataDownloader) {
+    public PYPLRatingParser(@Qualifier("PYPLDownloader") LanguageDataDownloader dataDownloader,
+                            @Value("${sources.pypl.name}") String sourceName) {
         this.dataDownloader = dataDownloader;
+        this.SOURCE_NAME = sourceName;
     }
 
     @Override
@@ -64,7 +67,7 @@ public class PYPLRatingParser implements LanguageRatingParser {
         List<Double> values = new ArrayList<>();
 
         while (nameMatcher.find()) {
-            languages.add(new LanguageData(nameMatcher.group(), SOURCE_NAME));
+            languages.add(new LanguageData(nameMatcher.group(), PYPLRatingParser.this.SOURCE_NAME));
         }
         while (dateMatcher.find())
             dates.add(dateMatcher.group());
