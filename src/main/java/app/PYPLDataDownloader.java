@@ -3,41 +3,46 @@ package app;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.util.function.Supplier;
 
 
 @Repository("PYPLDownloader")
 public class PYPLDataDownloader implements LanguageDataDownloader {
 
-    private static final String PYPL_ALL_URL = "https://raw.githubusercontent.com/pypl/pypl.github.io/master/PYPL/All.js";
+    private final String URL;
+    private final String FILE_NAME;
     private final FileDataWriter fileDataWriter;
 
     @Autowired
-    public PYPLDataDownloader(FileDataWriter fileDataWriter) {
+    public PYPLDataDownloader(FileDataWriter fileDataWriter,
+                              @Value("${sources.pypl.url}") String url,
+                              @Value("${sources.pypl.filename}") String fileName) {
         this.fileDataWriter = fileDataWriter;
+        this.URL = url;
+        this.FILE_NAME = fileName;
     }
 
-    private Supplier<Document> documentSupplier = () -> {
+    private Document getDocument() {
         try {
-            return Jsoup.connect(PYPL_ALL_URL)
+            return Jsoup.connect(URL)
                     .userAgent("Chrome/4.0.249.0 Safari/532.5")
                     .referrer("http://www.google.com")
                     .get();
         } catch (IOException e) {
-            throw new RuntimeException("DownloadException (Can't download data from PYPL)");
+            throw new RuntimeException("DownloadException (Can't download data from PYPL)", e);
         }
-    };
+    }
 
     @Override
     public String getData() {
-        return documentSupplier.get().text();
+        return getDocument().text();
     }
 
     @Override
     public void saveDataInPlainFormat() {
-        fileDataWriter.writeData("PYPLWholeData.txt", getData()); //plain data
+        fileDataWriter.writeData(FILE_NAME, getData());
     }
 }

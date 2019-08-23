@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service("TiobeParser")
 public class TiobeRatingParser implements LanguageRatingParser {
 
-    private final String SOURCE_NAME = "TIOBE";
+    private static final String SOURCE_NAME = "TIOBE";
 
     private static final Pattern NAME_PATTERN = Pattern.compile("(?<=name : ').+(?=')");
     private static final Pattern DATE_PATTERN = Pattern.compile("(?<=UTC\\().+?(?=\\))");

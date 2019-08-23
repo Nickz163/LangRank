@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 @Service("SOvFParser")
 public class SOvFRatingParser implements LanguageRatingParser {
 
-    private final String SOURCE_NAME = "Stack_Overflow";
-    private LanguageDataDownloader dataDownloader;
-    private  List<String> languagesNames;
+    private static  final String SOURCE_NAME = "Stack_Overflow";
+    private final LanguageDataDownloader dataDownloader;
+    private List<String> languagesNames;
 
     @Autowired
     public SOvFRatingParser(@Qualifier("SOvFDownloader") LanguageDataDownloader dataDownloader,
@@ -59,7 +59,7 @@ public class SOvFRatingParser implements LanguageRatingParser {
     };
 
     private static final Pattern NAME_PATTERN = Pattern.compile("(?<=\").*(?=\")");
-    private static final Pattern VALUE_PATTERN = Pattern.compile("\\d+\\.?\\d*"); // d+  -   d{1,}
+    private static final Pattern VALUE_PATTERN = Pattern.compile("\\d+\\.?\\d*");
 
     private Function<String, Map<String, List<String>>> valuesParser = str -> {
         Map<String, List<String>> data = new HashMap<>();

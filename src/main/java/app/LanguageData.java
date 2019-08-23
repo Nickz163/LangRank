@@ -5,6 +5,9 @@ import org.springframework.data.annotation.Id;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Information for writing to the database
+ */
 public class LanguageData {
 
     @Id
