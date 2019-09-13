@@ -1,4 +1,6 @@
-package app;
+package app.parsers;
+
+import app.model.LanguageData;
 
 import java.util.List;
 

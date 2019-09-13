@@ -1,5 +1,7 @@
-package app;
+package app.parsers;
 
+import app.downloaders.LanguageDataDownloader;
+import app.model.LanguageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,5 +1,6 @@
-package app;
+package app.downloaders;
 
+import app.repository.FileDataWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;

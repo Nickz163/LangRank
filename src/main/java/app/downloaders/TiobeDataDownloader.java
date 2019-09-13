@@ -1,5 +1,6 @@
-package app;
+package app.downloaders;
 
+import app.repository.FileDataWriter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;

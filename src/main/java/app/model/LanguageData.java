@@ -1,6 +1,7 @@
-package app;
+package app.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 /**
  * Information for writing to the database
  */
+@Document
 public class LanguageData {
 
     @Id
@@ -42,6 +44,10 @@ public class LanguageData {
 
     public String getName() {
         return name;
+    }
+
+    public String getSource() {
+        return source;
     }
 
     public Map<String, Double> getData() {
